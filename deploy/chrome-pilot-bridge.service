@@ -1,0 +1,13 @@
+[Unit]
+Description=chrome-pilot WS bridge (Hermes Chrome control, 127.0.0.1:8790/8791)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/cfrog527/.hermes/scripts/chrome-pilot
+ExecStart=/home/cfrog527/.hermes/scripts/chrome-pilot/venv/bin/python /home/cfrog527/.hermes/scripts/chrome-pilot/chrome_pilot.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
