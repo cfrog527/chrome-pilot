@@ -52,7 +52,7 @@ chrome.runtime.onInstalled.addListener(() => connect());
 /* 暴露給外部（bridge 可用 CDP 對 SW target 呼叫 __pilot.connect() 喚醒）
  * 因為 SW 被暫停後不會自己重連，bridge 下指令前先喚醒 */
 globalThis.__pilot = {
-  version: "v3",
+  version: "v4",
   connect,
   isAlive: wsAlive,
   handleReq
@@ -141,7 +141,7 @@ async function handleReq(req) {
 
   if (action === "tabs") {
     const tabs = await chrome.tabs.query({});
-    return reply(id, { tabs: tabs.filter(t => t.type === "page").map(t => ({ tabId: t.id, url: t.url, title: t.title, active: t.active })) });
+    return reply(id, { tabs: tabs.map(t => ({ tabId: t.id, url: t.url, title: t.title, type: t.type, active: t.active })) });
   }
 
   if (action === "reload") {
