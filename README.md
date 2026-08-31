@@ -98,6 +98,7 @@ $PY $P/pilot.py eval '(() => {
 | `chrome_pilot.py` | 本機 WS 中繼（bridge）；每 15s ping 維持 SW 存活；離線時排隊 |
 | `pilot.py` | Hermes 端 CLI |
 | `deploy/` | systemd unit + chromium.d 安裝檔 |
+| `docs/skill/SKILL.md` | Hermes Agent skill（架構、坑、排障；與 README 同步維護） |
 
 ### Extension actions（`pilot.py raw` 可直接送）
 
@@ -137,11 +138,10 @@ $PY $P/pilot.py eval '(() => {
 
 ```bash
 $PY $P/pilot.py open file://$PWD/pilot_form.html      # 取 tabId
-$PY $P/pilot.py type  marvin --selector-ignored       # 先 click 聚焦 input
-$PY $P/pilot.py click --selector "#name"
-$PY $P/pilot.py type  --text marvin
-$PY $P/pilot.py click --selector "#btn"
-$PY $P/pilot.py eval 'document.getElementById("out").textContent'
+$PY $P/pilot.py click --selector "#name" --tab <tabId>   # 聚焦 input
+$PY $P/pilot.py type  marvin --tab <tabId>              # 逐字鍵入
+$PY $P/pilot.py click --selector "#btn" --tab <tabId>
+$PY $P/pilot.py eval 'document.getElementById("out").textContent' --tab <tabId>
 # 應回 clicked:marvin
 ```
 
