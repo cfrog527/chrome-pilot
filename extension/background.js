@@ -3,6 +3,7 @@
  * 連上 8790 bridge，接收指令、執行、回傳結果
  */
 const BRIDGE = "ws://127.0.0.1:8790";
+const SW_VERSION = "v4";
 let ws = null;
 const debuggerTabs = new Set();
 
@@ -141,6 +142,14 @@ async function handleReq(req) {
   if (action === "tabs") {
     const tabs = await chrome.tabs.query({});
     return reply(id, { tabs: tabs.filter(t => t.type === "page").map(t => ({ tabId: t.id, url: t.url, title: t.title, active: t.active })) });
+  }
+
+  if (action === "reload") {
+    // 開發模式（--load-extension）SW 從磁碟資料夾讀 code，
+    // chrome.runtime.reload() 會終止當前 SW 並重新載入磁碟上的新版
+    reply(id, { ok: true, message: "sw reloading" });
+    setTimeout(() => chrome.runtime.reload(), 200);
+    return;
   }
 
   if (action === "status") {

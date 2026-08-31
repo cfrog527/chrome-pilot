@@ -50,7 +50,7 @@ async def send_ws_tab(action, tab_id, **kwargs):
 async def main():
     import argparse
     parser = argparse.ArgumentParser(description="Chrome Pilot v2")
-    parser.add_argument("command", choices=["open", "tabs", "eval", "click", "status", "navigate"])
+    parser.add_argument("command", choices=["open", "tabs", "eval", "click", "status", "navigate", "reload"])
     parser.add_argument("args", nargs="*")
     parser.add_argument("--tab", type=int, help="Tab ID")
     args = parser.parse_args()
@@ -61,7 +61,7 @@ async def main():
             print(json.dumps(resp, indent=2, ensure_ascii=False))
 
         elif args.command == "tabs":
-            resp = await send_ws("status")
+            resp = await send_ws("tabs")
             print(json.dumps(resp, indent=2, ensure_ascii=False))
 
         elif args.command == "eval":
@@ -83,6 +83,18 @@ async def main():
         elif args.command == "status":
             resp = await send_ws("status")
             print(json.dumps(resp, indent=2, ensure_ascii=False))
+
+        elif args.command == "reload":
+            # 遠端觸發 chrome.runtime.reload()：SW 終止並重新載入磁碟上的新版
+            # reload 後 SW 需要時間喚醒重連，稍等後驗證 status
+            resp = await send_ws("reload")
+            print(json.dumps(resp, indent=2, ensure_ascii=False))
+            await asyncio.sleep(8)
+            try:
+                check = await send_ws("status")
+                print("reloaded, status:", json.dumps(check, ensure_ascii=False))
+            except Exception as e:
+                print("reload 後重連中（MV3 alarm 30s 內會自動連）:", e)
 
         elif args.command == "navigate":
             url = args.args[0] if args.args else ""
